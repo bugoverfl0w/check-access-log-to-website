@@ -1,0 +1,9 @@
+#!/bin/bash
+
+[ ! -f "$1" ] && echo "no access log file" && exit 0
+
+[ -z "$2" ] && echo "no domain" && exit 0
+
+REF_RESULT=/tmp/access_ref_$2
+
+awk -F'"' '$3~/200/ && $1 !~ /(CN|HK)/ {print $4}' $1 | sed -e "s/[^/]*\/\/\([^@]*@\)\?\([^:/]*\).*/\2/" | grep -v '-' | grep -v null | grep -v $2 | sed -n "s/\([^.]*.[^.]*\).*/\1/p" | sort | uniq -c | sort > $REF_RESULT
